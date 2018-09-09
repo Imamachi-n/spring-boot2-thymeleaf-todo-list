@@ -3,12 +3,10 @@ package com.example.todotask.web;
 import com.example.todotask.domain.Task;
 import com.example.todotask.form.TaskForm;
 import com.example.todotask.service.TodoService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 
 import java.time.LocalDate;
@@ -46,9 +44,9 @@ public class TodoWebController {
 
     // タスクを１件作成
     @PostMapping(value = "/tasks")
-    public ModelAndView createOneTask(@ModelAttribute TaskForm form){
+    public ModelAndView createOneTask(@ModelAttribute TaskForm taskForm){
 
-        Task task = new Task(form.getSubject(), form.getDeadline(), form.getHasDone());
+        Task task = new Task(taskForm.getSubject(), taskForm.getDeadline(), taskForm.getHasDone());
         todoService.createTask(task);
         return new ModelAndView(REDIRECT_TO);
     }
@@ -83,6 +81,27 @@ public class TodoWebController {
         TaskForm form = new TaskForm(task.get().getSubject(), task.get().getDeadLine(),
                 task.get().getHasDone(), false);
         return Optional.of(form);
+    }
+
+    // タスクを１件更新
+    @PutMapping(value = "/tasks/{id}")
+    public ModelAndView updateOneTask(@PathVariable Integer id, TaskForm taskForm){
+        Task task = new Task(taskForm.getSubject(), taskForm.getDeadline(), taskForm.getHasDone());
+        todoService.updateTask(task);
+
+        return new ModelAndView(REDIRECT_TO);
+    }
+
+    // タスクを１件削除
+    @DeleteMapping(value = "/tasks/{id}")
+    public ModelAndView deleteOneTask(@PathVariable Integer id){
+
+        Optional<Task> task = todoService.findOneTask(id);
+        if (task.isPresent()){
+            todoService.deleteTask(id);
+        }
+
+        return new ModelAndView(REDIRECT_TO);
     }
 
 }
