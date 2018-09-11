@@ -57,7 +57,22 @@
                         <th colspan="2">編集</th>
                     </tr>
                 </thead>
-                <tbody th:remove=""
+                <tbody th:remove="all-but-first">
+                    <tr th:each="task: ${tasks}" th:class="${task.hasDone} ? 'table-dark'">
+                        <td th:text="${task.subject}">原稿の締め切り</td>
+                        <td th:text="${task.deadLine}">2018-06-17</td>
+                        <td>
+                            <a type="button" class="btn" th:classappend="${task.hasDone} ? 'btn-light' : 'btn-success'"
+                               href="./tasks.html" th:href="@{/tasks/{id}(id=${task.id})}">編集</a>
+                        </td>
+                        <td>
+                            <form method="post" action="./tasks.html" th:action="@{/tasks/{id}(id=${task.id})}">
+                                <input type="submit" class="btn"
+                                       th:classappend="${task.hasDone} ? 'btn-light' : 'btn-danger'" value="削除"/>
+                            </form>
+                        </td>
+                    </tr>
+                </tbody>
             </table>
         </div>
 
